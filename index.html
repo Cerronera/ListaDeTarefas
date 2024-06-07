@@ -11,15 +11,13 @@
 <body>
   <div class="header">
     <h2>Lista de tarefas</h2>
-        <input type="text" id="tarefa" placeholder="Informe a tarefa">
-        <input type="text" id="prazo" placeholder="Informe o prazo em dias">
-        <span onclick="addElemento()" class="addBtn">Incluir</span>
+      <form id="tarefaForm">   
+        <input type="text" id="nameInput" placeholder="Informe a tarefa">
+        <input type="text" id="prazoInput" placeholder="Informe o prazo em dias">
+        <button type="submit" id="btn"> Cadastrar Tarefa</button></form>
   </div>
-  <ul id="itemLista">
+  <ul id="tarefaList">
   </ul>
-  <div>
-  <span onclick="deleteAll()" class="addBtn2">Deletar Tarefas</span>
-</div>
   <script src="script.js"></script>
 </body>
 

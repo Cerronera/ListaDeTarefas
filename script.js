@@ -1,95 +1,78 @@
-let myNodelist = document.getElementsByTagName('li');
-for (let i = 0; i < myNodelist.length; i++) {
-  let span = document.createElement('span');
-  let txt = document.createTextNode('\u00D7'); //caracter x
-  span.className = 'close';
-  span.appendChild(txt);
-  myNodelist[i].appendChild(span);
-}
-let close = document.getElementsByClassName('close');
-for (let i = 0; i < close.length; i++) {
-  close[i].onclick = function () {
-    let div = this.parentElement;
-    div.style.display = 'none';
-  };
+var tarefaList = []; //Comando que cria uma variável patientList e a inicializa como um array vazio. Essa variável é usada para armazenar a lista de pacientes cadastrados.
+var count = 1;
+
+function addTarefa(name, prazo) {
+  var newTarefa = { id: count++, name: name, prazo: prazo }; //cria um novo objetivo de paciente (newTarefa), com as propriedades id, name e prazo
+  tarefaList.push(newTarefa); //comando que adiciona o novo paciente ao final da lista de pacientes
+  localStorage.setItem('tarefaList', JSON.stringify(tarefaList)); //o JSON.stringfy converte o objeto JavaScript em uma string JSON
+  renderTarefaList();
 }
 
-function deleteAll() {
-  let itens = document.getElementsByTagName('li');
-  for (let i = 0; i < itens.length; i++) {
-    itens[i].style.display = 'none';
+// Função para excluir um paciente
+function deleteTarefa(tarefaId) {
+  var updatedTarefaList = tarefaList.filter(function (tarefa) {
+    return tarefa.id !== tarefaId; //retorna todos os elementos que não sejam no ID selecionado
+  });
+
+  if (updatedTarefaList.length < tarefaList.length) { //verifica se a lista atualizada é diferente da lista original
+    tarefaList = updatedTarefaList;
+    localStorage.setItem('tarefaList', JSON.stringify(tarefaList)); 
+    renderTarefaList();
+  } else {
+    alert('Tarefa não encontrada.');
   }
 }
 
-let list = document.querySelector('ul');
-list.addEventListener(
-  'click',
-  function (ev) {
-    if (ev.target.tagName === 'LI') {
-      ev.target.classList.toggle('checked');
-    }
-  },
-  false,
-);
+// Função para recuperar a lista de pacientes do localStorage
+function getTarefaList() {
+  var storedList = JSON.parse(localStorage.getItem('tarefaList')); //converte a string JSON para objeto JavaScript
+  tarefaList = storedList || []; //se storedList for um valor válido (não seja nulo ou indefinido). é atribuido a tarefaList. Caso contrário, tarefaList recebe um array vazio
+}
+
+// Função para renderizar a lista de pacientes no HTML
+function renderTarefaList() {
+  var tarefaListElement = document.getElementById('tarefaList');
+  tarefaListElement.innerHTML = ''; //limpa o conteúdo HTML do elemento tarefaListElement
+
+  tarefaList.forEach(function (tarefa) {
+    var listItem = document.createElement('li');
+    //renderiza a lista de pacientes. Itera sobre cada paciente na lista encontrada e cria um <li> para cada paciente
+    listItem.innerHTML = '<span class="tarefa-name">' + tarefa.name + '</span> (Prazo: ' + tarefa.prazo + ') <button class="delete-button" onclick="deleteTarefa(' + tarefa.id + ')">Excluir</button>';
+    tarefaListElement.appendChild(listItem);
+  });
+}
+
+// Recuperar a lista de pacientes do localStorage
+getTarefaList();
+
+// Renderizar a lista de pacientes no HTML
+renderTarefaList();
+
+// Event listener para o formulário de cadastro de pacientes
+document.getElementById('tarefaForm').addEventListener('submit', function (event) {
+  event.preventDefault();
+  var nameInput = document.getElementById('nameInput');
+  var prazoInput = document.getElementById('prazoInput');
+  addTarefa(nameInput.value, getPrazo(prazoInput.value));
+  nameInput.value = '';
+  prazoInput.value = '';
+});
 
 function getData() {
   const dataAtual = new Date();
   const dia = dataAtual.getDate(); // Dia do mês (1-31)
-  const mes = dataAtual.getMonth(); // Mês (0-11, janeiro é 0)
+  const mes = dataAtual.getMonth() + 1; // Mês (0-11, janeiro é 0) + 1 para converter para o formato de 1 a 12
   const ano = dataAtual.getFullYear();
-  return `${dia}/${mes + 1}/${ano} `;
+  return `${dia}/${mes}/${ano}`; // Retornar a data formatada corretamente
 }
 
 function getPrazo(prazoInput) {
   const dataAtual = new Date();
-  dataAtual.setDate(dataAtual.getDate() + prazoInput); // Adiciona os dias ao prazo
+  dataAtual.setDate(dataAtual.getDate() + parseInt(prazoInput)); // Adiciona os dias ao prazoInput convertendo para número inteiro
   const dia = dataAtual.getDate(); // Dia do mês (1-31)
-  const mes = dataAtual.getMonth(); // Mês (0-11, janeiro é 0)
+  const mes = dataAtual.getMonth() + 1; // Mês (0-11, janeiro é 0) + 1 para converter para o formato de 1 a 12
   const ano = dataAtual.getFullYear();
-  return ` Prazo: ${dia}/${mes + 1}/${ano} `;
+  return `${dia}/${mes}/${ano}`; // Retornar a data formatada corretamente
 }
 
-function addElemento() {
-  let li = document.createElement('li');
-  let inputValue = document.getElementById('tarefa').value.toUpperCase();
-  let prazoInput = parseInt(document.getElementById('prazo').value);
-  let prazoValor = getPrazo(prazoInput);
-  let t = document.createTextNode(inputValue);
-  let dataFormatada = getData();
 
-  if (inputValue === '') {
-    alert('Você precisa descrever a tarefa');
-    return;
-  }
-
-  let dataSpan = document.createElement('span');
-  let dataText = document.createTextNode(dataFormatada);
-  dataSpan.appendChild(dataText);
-  dataSpan.className = 'data';
-
-  let prazoSpan = document.createElement('span');
-  let prazoText = document.createTextNode(prazoValor);
-  prazoSpan.appendChild(prazoText);
-  prazoSpan.className = 'prazo';
-
-  let closeSpan = document.createElement('span');
-  let closeText = document.createTextNode('\u00D7');
-  closeSpan.className = 'close';
-  closeSpan.appendChild(closeText);
-
-  li.appendChild(dataSpan); // Primeiro adiciona a data
-  li.appendChild(t); // Depois adiciona o texto da tarefa
-  li.appendChild(prazoSpan); // Depois adiciona o prazo
-  li.appendChild(closeSpan); // Por fim, adiciona o botão de fechamento
-
-  document.getElementById('itemLista').appendChild(li);
-  document.getElementById('tarefa').value = '';
-  document.getElementById('prazo').value = '';
-
-  for (let i = 0; i < close.length; i++) {
-    close[i].onclick = function () {
-      let div = this.parentElement;
-      div.style.display = 'none';
-    };
-  }
-}

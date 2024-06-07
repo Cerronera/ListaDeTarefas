@@ -48,6 +48,8 @@ ul li.checked {
   background-color: #dc3545;
   color: white;
 }
+
+
 .header {
   background-color: #007bff;
   padding: 30px 40px;
@@ -99,4 +101,15 @@ input {
 
 .addBtn:hover {
   background-color: #218838;
+}
+
+
+button {
+ padding: 10px;
+ background-color:  #218838;
+ color: white;
+ border-color: black;
+ border-radius: 8px;
+ border-width: 2px;
+ 
 }
